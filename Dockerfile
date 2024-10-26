@@ -4,6 +4,7 @@ FROM base as builder
 
 WORKDIR /home/node/app
 COPY package*.json ./
+COPY package-lock.json ./
 
 COPY . .
 RUN npm ci
@@ -16,6 +17,7 @@ ENV PAYLOAD_CONFIG_PATH=dist/payload.config.js
 
 WORKDIR /home/node/app
 COPY package*.json  ./
+COPY package-lock.json ./
 
 RUN npm ci --only=production
 COPY --from=builder /home/node/app/dist ./dist
