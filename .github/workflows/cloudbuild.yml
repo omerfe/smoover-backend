@@ -1,4 +1,4 @@
-name: Deploy to Google Cloud Run
+name: Build and Push to GCR
 
 on:
   push:
@@ -7,11 +7,11 @@ on:
 
 env:
   PROJECT_ID: smover-backend
-  SERVICE_NAME: run.googleapis.com
+  IMAGE_NAME: smover-backend
   REGION: us-central1
 
 jobs:
-  deploy:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,15 +30,9 @@ jobs:
 
       - name: Build and Push Docker image
         run: |
-          docker build -t gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA .
-          docker push gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA
+          docker build -t gcr.io/$PROJECT_ID/$IMAGE_NAME:$GITHUB_SHA .
+          docker push gcr.io/$PROJECT_ID/$IMAGE_NAME:$GITHUB_SHA
 
-      - name: Deploy to Cloud Run
+      - name: Print Image URL
         run: |
-          gcloud run deploy $SERVICE_NAME \
-            --image gcr.io/$PROJECT_ID/$SERVICE_NAME:$GITHUB_SHA \
-            --platform managed \
-            --region $REGION \
-            --allow-unauthenticated \
-            --set-env-vars "DATABASE_URI=$(gcloud secrets versions access latest --secret=DATABASE_URI)" \
-            --set-env-vars "PAYLOAD_SECRET=$(gcloud secrets versions access latest --secret=PAYLOAD_SECRET)"
+          echo "Image URL: gcr.io/$PROJECT_ID/$IMAGE_NAME:$GITHUB_SHA"
