@@ -24,4 +24,7 @@ steps:
       - "--platform=managed"
       - "--image=us-docker.pkg.dev/$PROJECT_ID/smover-backend/cms:$SHORT_SHA"
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 timeout: 1800s
